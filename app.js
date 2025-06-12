@@ -9,6 +9,10 @@ const port = process.env.PORT;
 
 app.use(express.json());
 
+const authroute = require('./routes/auth');
+
+app.use('/api/auth', authroute)
+
 connectDB().then(() => {
   app.listen(port, () => {
     console.log(`App running on port ${port}`);
