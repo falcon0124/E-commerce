@@ -5,11 +5,11 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 async function registerUser(req, res) {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password, role } = req.body;
     if (await User.findOne({ email })) {
         return res.status(409).json('email already exists');
     }
-    const user = await User.create({ fullName, email, password });
+    const user = await User.create({ fullName, email, password, role });
 
     const token = jwt.sign({
         _id: user._id,
@@ -98,4 +98,12 @@ async function deleteUser(req, res) {
     }
 }
 
-module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, deleteUser };
+async function getAllUser(req, res) {
+    try{
+        const users = await User.find({}, 'fullName email role');
+        res.status(200).json({message: `${users.length} users found`, users});
+    }catch(err){
+        res.status(400).json({message: 'error getting user'});
+    }
+}
+module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, deleteUser, getAllUser };

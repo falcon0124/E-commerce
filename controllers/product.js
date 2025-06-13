@@ -81,4 +81,20 @@ async function getSingleProduct(req, res) {
         res.status(400).json({message: "something went wrong"})
     }
 }
-module.exports = { createProduct, upload, userProduct, getAllProducts, getSingleProduct };
+
+async function deleteProduct(req, res) {
+    const {id} = req.params;
+    try{
+        const product = await Product.findById(id);
+
+        if(req.user._id.toString() === product.createdBy.toString()){
+            await Product.findByIdAndDelete(id);
+            res.status(200).json({message: 'deleted sucessfully'})
+        }else{
+            return res.status(200).json({message: 'unautherized'})
+        }
+    }catch(err){
+        res.status(400).json({message: "error deleting"});
+    }
+}
+module.exports = { createProduct, upload, userProduct, getAllProducts, getSingleProduct, deleteProduct};

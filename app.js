@@ -16,10 +16,12 @@ app.use(express.static(path.resolve('./public')));
 const authroute = require('./routes/auth');
 const userRoute = require('./routes/user');
 const pdtRoute = require('./routes/product');
+const adminRoute = require('./routes/admin');
 
 app.use('/api/auth', authroute);
 app.use('/api/user', userRoute);
 app.use('/api/product', pdtRoute);
+app.use('/api/admin', adminRoute);
 
 connectDB().then(() => {
   app.listen(port, () => {
