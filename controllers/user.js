@@ -2,7 +2,6 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
-const verifyToken = require('../middlewares/protectRoute');
 dotenv.config();
 
 async function registerUser(req, res) {
