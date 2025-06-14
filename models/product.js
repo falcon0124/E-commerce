@@ -21,7 +21,14 @@ const productSchema = new Schema({
     imageUrl:{
         type: String,
         required: true,
-    }
+    },
+    category: {
+    type: String,
+    required: true,
+    enum: ['Electronics', 'Fashion', 'Home', 'Books', 'Other'], 
+    default: 'Other'
+},
+
 }, {timestamps: true});
 
 const Product = model("product", productSchema)

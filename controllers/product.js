@@ -18,7 +18,7 @@ const upload = multer({ storage: storage });
 
 async function createProduct(req, res) {
     try {
-        const { pdtName, pdtDescription, price } = req.body;
+        const { pdtName, pdtDescription, price, category } = req.body;
 
         if (!req.file) {
             return res.status(400).json({ message: "Image file is required" });
@@ -28,6 +28,7 @@ async function createProduct(req, res) {
             pdtName,
             pdtDescription,
             price: Number(price),
+            category,
             imageUrl: `uploads/${req.file.filename}`,
             createdBy: req.user._id
         });
@@ -68,33 +69,69 @@ async function getAllProducts(req, res) {
 }
 
 async function getSingleProduct(req, res) {
-    const {id} = req.params;
-    try{
+    const { id } = req.params;
+    try {
         const product = await Product.findById(id).populate('createdBy', 'fullName email');
 
-        if(!product){
-            return res.status(200).json({message: "product not found"})
+        if (!product) {
+            return res.status(200).json({ message: "product not found" })
         }
-        res.status(200).json({message: "product found", product})
+        res.status(200).json({ message: "product found", product })
 
-    }catch(err){
-        res.status(400).json({message: "something went wrong"})
+    } catch (err) {
+        res.status(400).json({ message: "something went wrong" })
     }
 }
 
 async function deleteProduct(req, res) {
-    const {id} = req.params;
-    try{
+    const { id } = req.params;
+    try {
         const product = await Product.findById(id);
 
-        if(req.user._id.toString() === product.createdBy.toString()){
+        if (req.user._id.toString() === product.createdBy.toString()) {
             await Product.findByIdAndDelete(id);
-            res.status(200).json({message: 'deleted sucessfully'})
-        }else{
-            return res.status(200).json({message: 'unautherized'})
+            res.status(200).json({ message: 'deleted sucessfully' })
+        } else {
+            return res.status(200).json({ message: 'unautherized' })
         }
-    }catch(err){
-        res.status(400).json({message: "error deleting"});
+    } catch (err) {
+        res.status(400).json({ message: "error deleting" });
     }
 }
-module.exports = { createProduct, upload, userProduct, getAllProducts, getSingleProduct, deleteProduct};
+
+async function searchProduct(req, res) {
+    const { name } = req.query;
+    try {
+        const item = await Product.find({
+            pdtName: { $regex: name, $options: 'i' }
+        });
+
+        if (item.length === 0) {
+            return res.status(200).json({ message: 'product not found' })
+        }
+        return res.status(200).json({ message: `${item.length} item(s) found similar to ${name}`, item });
+
+    } catch (err) {
+        return res.status(400).json({ message: 'An error occured' });
+
+    }
+}
+
+async function getProductByCategory(req, res) {
+    const category = req.params.category;
+
+    try {
+        const item = await Product.find({
+            category: { $regex: new RegExp(`^${category}$`, 'i') }
+        });
+
+        if (item.length === 0) {
+            return res.status(200).json({ message: 'product not found' })
+        }
+        return res.status(200).json({ message: `${item.length} item(s) found in ${category} category`, item });
+    } catch (err) {
+        return res.status(400).json({ message: 'An error occured' });
+
+    }
+}
+module.exports = { createProduct, upload, userProduct, getAllProducts, getSingleProduct, deleteProduct, searchProduct, getProductByCategory };
