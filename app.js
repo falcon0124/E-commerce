@@ -17,11 +17,13 @@ const authroute = require('./routes/auth');
 const userRoute = require('./routes/user');
 const pdtRoute = require('./routes/product');
 const adminRoute = require('./routes/admin');
+const cartRoute = require('./routes/cart');
 
 app.use('/api/auth', authroute);
 app.use('/api/user', userRoute);
 app.use('/api/product', pdtRoute);
 app.use('/api/admin', adminRoute);
+app.use('/api/cart', cartRoute);
 
 connectDB().then(() => {
   app.listen(port, () => {
