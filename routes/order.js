@@ -6,7 +6,7 @@ const isAdmin = require('../middlewares/isAdmin')
 const router = express.Router();
 
 router.post('/',verifyToken, placeOrder);
+router.delete('/:orderId', verifyToken, deleteOder);
 router.get('/view-orders', verifyToken, viewUserOrder);
-router.delete('/:orderId', deleteOder);
 
 module.exports = router;

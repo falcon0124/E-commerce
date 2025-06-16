@@ -24,7 +24,7 @@ const orderSchema = new Schema({
     currentStatus: {
         type: String,
         required: true,
-        default: 'pending'
+        default: 'PENDING'
     },
     paymentMethod:{
         type: String,
@@ -32,7 +32,7 @@ const orderSchema = new Schema({
         enum: ['UPI', 'COD', 'CREDIT', 'DEBIT', 'BITCOIN'], 
         default: 'COD'
     },
-    shippingAdaress: {
+    shippingAddress: {
         type: String,
         required: true,
     },

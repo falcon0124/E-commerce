@@ -18,12 +18,16 @@ async function placeOrder(req, res) {
         let cartSize = userCart.items.length;
 
         while (cartSize > 0) {
-            const productData = await Product.findById(userCart.items[cartSize - 1].product);
+            const currentItem = userCart.items[cartSize - 1];
+            const productData = await Product.findById(currentItem.product);
+
             if (productData) {
-                totalAmount += productData.price;
+                totalAmount += productData.price * currentItem.quantity;
             }
+
             cartSize--;
         }
+
 
         const orderItems = await Order.create({
             user: userId,
@@ -106,4 +110,25 @@ async function viewOrdersAdmin(req, res) {
 
     }
 }
-module.exports = { placeOrder, viewUserOrder, viewOrdersAdmin, deleteOder };
+
+async function updateStatus(req, res) {
+    const { orderId } = req.params;
+    const { newStatus } = req.body;
+
+    try {
+        const userOrder = await Order.findById(orderId);
+
+        if (!userOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+
+        userOrder.currentStatus = newStatus;
+        await userOrder.save();
+
+        return res.status(200).json({ message: `Order status updated to ${newStatus}` });
+    } catch (err) {
+        return res.status(400).json({ message: 'something went wrong' });
+    }
+}
+module.exports = { placeOrder, viewUserOrder, viewOrdersAdmin, deleteOder, updateStatus };
