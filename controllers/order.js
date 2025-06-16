@@ -70,12 +70,31 @@ async function viewUserOrder(req, res) {
     }
 }
 
+async function deleteOder(req, res) {
+    const userId = req.user._id;
+    const { orderId } = req.params;
+
+    try {
+        const order = await Order.findById(orderId);
+
+        if (!order || order.user.toString() !== userId) {
+            return res.status(404).json({ message: 'Order not found or unauthorized' });
+        }
+        await Order.findByIdAndDelete(orderId);
+        return res.status(200).json({ message: 'Order deleted' })
+    } catch (err) {
+        return res.status(200).json({ message: 'Something went wrong' });
+
+    }
+}
+
 async function viewOrdersAdmin(req, res) {
     try {
-       const allOrders = await Order.find({})
-            .populate('user', 'fullName') 
+        const allOrders = await Order.find({})
+            .sort({ createdAt: -1 })
+            .populate('user', 'fullName')
             .populate('items.product');
-            
+
         if (allOrders.length === 0) {
             return res.status(200).json({ message: 'No orders to show' })
         }
@@ -87,4 +106,4 @@ async function viewOrdersAdmin(req, res) {
 
     }
 }
-module.exports = { placeOrder, viewUserOrder, viewOrdersAdmin };
+module.exports = { placeOrder, viewUserOrder, viewOrdersAdmin, deleteOder };
