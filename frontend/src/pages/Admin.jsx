@@ -1,6 +1,6 @@
 function Cart() {
   return (
-    <h1>ayoo admin Page</h1>
+    <h1>admin Page</h1>
   );
 }
 
