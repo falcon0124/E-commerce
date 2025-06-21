@@ -1,6 +1,6 @@
 function Cart() {
   return (
-    <h1>home Page</h1>
+    <h1 className="text-red-600">home Page</h1>
   );
 }
 
