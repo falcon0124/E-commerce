@@ -1,6 +1,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import {useState} from 'react';
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
@@ -14,7 +15,7 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
-    const [loggedIn, setLoggedIn] = useState(true);
+  const { isLoggedIn, setIsLoggedIn } = useAuth();
   return (
     <Disclosure as="nav" className="bg-gray-900">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -55,7 +56,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            
+
             {/* Profile dropdown */}
             <Menu as="div" className="relative ml-3">
               <div>
@@ -76,7 +77,7 @@ export default function Navbar() {
                 <MenuItem>
                   <a
                     href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                    className={isLoggedIn ? 'hidden' : "block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"}
                   >
                     Your Profile
                   </a>
@@ -84,7 +85,7 @@ export default function Navbar() {
                 <MenuItem>
                   <a
                     href="/register"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                    className={isLoggedIn ? 'hidden' : "block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"}
                   >
                     Register
                   </a>
@@ -100,7 +101,7 @@ export default function Navbar() {
                 <MenuItem>
                   <a
                     href="#"
-                    className={loggedIn ? 'hidden' : "block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"}
+                    className={isLoggedIn ? 'hidden' : "block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"}
                   >
                     Log-Out
                   </a>
