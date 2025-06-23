@@ -1,5 +1,6 @@
-import axios from './axios';
+import axios from './api/index'; 
 
-export const registerUser = (data) => axios.post('/auth/register', data);
-
-export const loginUser = (data) => axios.post('/auth/login', data);
+export const registerUser = async (formData) => {
+  const response = await axios.post('/auth/register', formData);
+  return response.data;
+};
