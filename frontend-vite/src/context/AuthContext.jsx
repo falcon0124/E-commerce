@@ -12,9 +12,8 @@ export function AuthProvider({ children }) {
       setIsLoggedIn(!!token);
     };
 
-    checkToken(); // check on mount
-
-    // Optional: Add a storage event listener if multiple tabs are used
+    checkToken(); 
+    
     window.addEventListener('storage', checkToken);
     return () => window.removeEventListener('storage', checkToken);
   }, []);
