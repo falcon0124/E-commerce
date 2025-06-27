@@ -1,59 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-const products = [
-  {
-    id: 1,
-    name: 'Earthen Bottle',
-    price: '$48',
-    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-01.jpg',
-    imageAlt: 'Tall slender porcelain bottle with natural clay textured body and cork stopper.',
-    cateogary: 'Electronics',
-  },
-  {
-    id: 2,
-    name: 'Stylish Lamp',
-    price: '$99',
-    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-02.jpg',
-    imageAlt: 'Aesthetic lamp with modern design.',
-    cateogary: 'Fashion',
-  },
-  {
-    id: 3,
-    name: 'Modern Sofa',
-    price: '$299',
-    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-02.jpg',
-    imageAlt: 'Comfortable modern sofa.',
-    cateogary: 'Home',
-  },
-  {
-    id: 4,
-    name: 'Classic Novel',
-    price: '$19',
-    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-02.jpg',
-    imageAlt: 'Vintage book cover.',
-    cateogary: 'Books',
-  },
-  {
-    id: 5,
-    name: 'Multicolor Pens',
-    price: '$9',
-    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-02.jpg',
-    imageAlt: 'Pack of colorful pens.',
-    cateogary: 'Other',
-  },
-];
+import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
+  const { backendUrl } = useAuth();
+  const [products, setProducts] = useState([])
   const [filteredItems, setFilteredItems] = useState(products);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/product/all`);
+        const data = await res.json();
+
+        console.log("✅ Products fetched:", data);
+
+        const productArray = data.allProducts;
+
+        setProducts(productArray);
+        setFilteredItems(productArray);
+      } catch (err) {
+        console.error("❌ Error fetching products:", err);
+      }
+    };
+
+    fetchProducts();
+  }, [backendUrl]);
 
   const filterProducts = (categories, keyword) => {
     let filtered = [...products];
 
     if (categories.length > 0) {
-      filtered = filtered.filter(item => categories.includes(item.cateogary));
+      filtered = filtered.filter(item => categories.includes(item.category));
     }
 
     if (keyword.trim() !== '') {
@@ -61,9 +41,9 @@ export default function Home() {
         item.name.toLowerCase().includes(keyword.toLowerCase())
       );
     }
-
     setFilteredItems(filtered);
   };
+
 
   const handleCategoryChange = (e) => {
     const { value, checked } = e.target;
@@ -130,31 +110,32 @@ export default function Home() {
         </h1>
       </div>
 
-      <div className="flex flex-wrap justify-center">
-        {filteredItems.map((item) => (
+      <div className="flex flex-wrap justify-center px-4">
+        {filteredItems?.map((item) => (
           <div
-            key={item.id}
-            className="max-w-sm space hover:border-amber-200 ease-in border-#101828 border-4 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 mb-10 ml-10"
+            key={item._id || item.id}
+            className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition duration-300 m-4 border border-gray-200"
           >
             <img
-              src={item.imageSrc}
-              alt={item.imageAlt}
-              className="w-full h-64 object-cover border-b-4 border-amber-300 hover:border-#101828 ease-in"
+              src={`${backendUrl}/${item.imageUrl}`}
+              alt={item.name}
+              className="w-full h-60 object-cover"
             />
             <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-800">{item.name}</h2>
-              <p className="text-gray-500">#{item.cateogary}</p>
-              <p className="text-gray-500 mt-1">{item.price}</p>
-              <div className="flex justify-between">
+              <h2 className="text-xl font-semibold text-gray-800 truncate">{item.pdtName}</h2>
+              <p className="text-gray-500 text-sm mb-1">#{item.category}</p>
+              <p className="text-gray-700 font-medium">{item.price}</p>
+
+              <div className="flex justify-between items-center mt-4">
                 <Link
-                  to="/ProductDetails"
-                  className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  to={`/product/${item._id || item.id}`}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
                 >
-                  View Product
+                  View
                 </Link>
-                <button className="text-xs cursor-pointer mt-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                <button className="text-blue-600 hover:text-blue-800 transition">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13L5.5 6M7 13l-1.5 6h13a1 1 0 001-1V14M10 21a1 1 0 11-2 0 1 1 0 012 0zm10 0a1 1 0 11-2 0 1 1 0 012 0z" />
                   </svg>
                 </button>
               </div>
@@ -162,6 +143,7 @@ export default function Home() {
           </div>
         ))}
       </div>
+
     </>
   );
 }

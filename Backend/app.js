@@ -11,6 +11,7 @@ const port = process.env.PORT;
 app.use(express.urlencoded({ extended: false}));
 app.use(express.json());
 app.use(express.static(path.resolve('./public')));
+app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 
 const cors = require('cors');
 
