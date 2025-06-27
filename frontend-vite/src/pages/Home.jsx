@@ -110,11 +110,11 @@ export default function Home() {
         </h1>
       </div>
 
-      <div className="flex flex-wrap justify-center px-4">
+      <div className="flex flex-wrap justify-center px-4 space">
         {filteredItems?.map((item) => (
           <div
             key={item._id || item.id}
-            className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition duration-300 m-4 border border-gray-200"
+            className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition duration-300 m-4 border-2 border-amber-200"
           >
             <img
               src={`${backendUrl}/${item.imageUrl}`}
@@ -124,7 +124,7 @@ export default function Home() {
             <div className="p-4">
               <h2 className="text-xl font-semibold text-gray-800 truncate">{item.pdtName}</h2>
               <p className="text-gray-500 text-sm mb-1">#{item.category}</p>
-              <p className="text-gray-700 font-medium">{item.price}</p>
+              <p className="text-gray-700 font-medium">${item.price}</p>
 
               <div className="flex justify-between items-center mt-4">
                 <Link
@@ -134,7 +134,7 @@ export default function Home() {
                   View
                 </Link>
                 <button className="text-blue-600 hover:text-blue-800 transition">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="size-7 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13L5.5 6M7 13l-1.5 6h13a1 1 0 001-1V14M10 21a1 1 0 11-2 0 1 1 0 012 0zm10 0a1 1 0 11-2 0 1 1 0 012 0z" />
                   </svg>
                 </button>
