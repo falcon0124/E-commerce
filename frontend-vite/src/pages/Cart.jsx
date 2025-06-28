@@ -58,6 +58,33 @@ export default function Cart() {
     0
   );
 
+  const handleCheckout = async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/order/placeOrder`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        credentials: "include",
+        body: JSON.stringify({})
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Checkout failed");
+      }
+
+      alert("✅ Order placed successfully!");
+      navigate('/orders');
+
+    } catch (err) {
+      console.error("❌ Checkout failed:", err);
+      alert("Checkout failed. Please try again.");
+    }
+  };
+
+
   return (
     <div className="max-w-4xl space mx-auto bg-white p-6 shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-6">🛒 Your Cart</h2>
@@ -83,11 +110,13 @@ export default function Cart() {
           <div className="text-right text-xl font-bold">
             Total: ₹{totalPrice}
           </div>
+          <button className="bg-blue-700 p-5 rounded-2xl font-bold text-amber-100 hover:bg-blue-600"
+            onClick={handleCheckout}
+          >
+            CHECKOUT
+          </button>
         </div>
       )}
-      <button className="bg-blue-700 p-5 rounded-2xl font-bold text-amber-100 hover:bg-blue-600">
-        CHECKOUT
-      </button>
     </div>
   );
 }
