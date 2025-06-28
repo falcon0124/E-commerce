@@ -6,42 +6,39 @@ export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-  const fetchCart = async () => {
-    try {
-      console.log("🔑 Token being sent:", token);
+    const fetchCart = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/cart/view`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
 
-      const res = await fetch(`${backendUrl}/api/cart/view`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+        if (!res.ok) {
+          const errMsg = await res.text();
+          throw new Error(`HTTP ${res.status} - ${errMsg}`);
+        }
 
-      if (!res.ok) {
-        const errMsg = await res.text();
-        throw new Error(`HTTP ${res.status} - ${errMsg}`);
+        const data = await res.json();
+        console.log("🛒 Cart data:", data);
+
+        setCartItems(data.cart?.items || []);
+      } catch (err) {
+        console.error("❌ Failed to load cart:", err);
       }
+    };
 
-      const data = await res.json();
-      console.log("🛒 Cart data:", data);
-      setCartItems(data.userCart);
-    } catch (err) {
-      console.error("❌ Failed to load cart:", err);
-    }
-  };
+    if (token) fetchCart();
+  }, [backendUrl, token]);
 
-  if (token) fetchCart();
-}, [backendUrl, token]);
-
-
-  const totalAmount = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
   const handleRemove = async (productId) => {
     try {
-      const res = await fetch(`${backendUrl}/api/cart/remove-item`, {
-        method: "POST",
+      const res = await fetch(`${backendUrl}/api/cart/remove/${productId}`, {
+        method: "DELETE",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         credentials: "include",
@@ -55,6 +52,11 @@ export default function Cart() {
       console.error("❌ Remove failed:", err);
     }
   };
+
+  const totalPrice = (cartItems || []).reduce(
+    (sum, item) => sum + (item.product?.price || 0) * (item.quantity || 1),
+    0
+  );
 
   return (
     <div className="max-w-4xl space mx-auto bg-white p-6 shadow-lg rounded-lg">
@@ -79,10 +81,13 @@ export default function Cart() {
             </div>
           ))}
           <div className="text-right text-xl font-bold">
-            Total: ₹{totalAmount}
+            Total: ₹{totalPrice}
           </div>
         </div>
       )}
+      <button className="bg-blue-700 p-5 rounded-2xl font-bold text-amber-100 hover:bg-blue-600">
+        CHECKOUT
+      </button>
     </div>
   );
 }

@@ -5,10 +5,10 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const checkToken = () => {
-      const token = localStorage.getItem('token');
       setIsLoggedIn(!!token);
     };
 
@@ -22,6 +22,7 @@ export function AuthProvider({ children }) {
     backendUrl,
     isLoggedIn,
     setIsLoggedIn,
+    token,
   };
 
   return (
