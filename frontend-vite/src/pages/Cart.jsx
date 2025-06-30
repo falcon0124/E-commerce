@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 
 export default function Cart() {
   const { backendUrl, token } = useAuth();
   const [cartItems, setCartItems] = useState([]);
-
+  const navigate = useNavigate(); 
+  
   useEffect(() => {
     const fetchCart = async () => {
       try {
@@ -59,29 +61,15 @@ export default function Cart() {
   );
 
   const handleCheckout = async () => {
-    try {
-      const res = await fetch(`${backendUrl}/api/order/placeOrder`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        },
-        credentials: "include",
-        body: JSON.stringify({})
-      });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Checkout failed");
-      }
-
-      alert("✅ Order placed successfully!");
-      navigate('/orders');
-
-    } catch (err) {
-      console.error("❌ Checkout failed:", err);
-      alert("Checkout failed. Please try again.");
+    if (cartItems.length === 0) {
+      alert("Your cart is empty!");
+      return;
     }
+
+    navigate("/PlaceOrder", {
+      state: { cartItems, totalPrice }
+    })
   };
 
 

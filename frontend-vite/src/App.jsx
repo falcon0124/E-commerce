@@ -8,6 +8,7 @@ import Orders from './pages/Orders';
 import Products from './pages/Products';
 import Admin from './pages/Admin';
 import ProductDetails from './pages/ProductDetails';
+import PlaceOrder from './pages/PlaceOrder';
 import './App.css'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="cart" element={<Cart />} />
         <Route path="orders" element={<Orders />} />
         <Route path="products" element={<Products />} />
+        <Route path="placeOrder" element={<PlaceOrder />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="admin" element={<Admin />} />
       </Route>
