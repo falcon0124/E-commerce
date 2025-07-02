@@ -78,7 +78,10 @@ async function updateUserProfile(req, res) {
 
         await user.save();
 
-        return res.status(200).json({ message: "Credentials updated" });
+        return res.status(200).json({
+            message: "Credentials updated",
+            updatedUser: { fullName: user.fullName, email: user.email }
+        });
 
     } catch (err) {
         return res.status(500).json({ message: "Something went wrong" });
@@ -99,11 +102,11 @@ async function deleteUser(req, res) {
 }
 
 async function getAllUser(req, res) {
-    try{
+    try {
         const users = await User.find({}, 'fullName email role');
-        res.status(200).json({message: `${users.length} users found`, users});
-    }catch(err){
-        res.status(400).json({message: 'error getting user'});
+        res.status(200).json({ message: `${users.length} users found`, users });
+    } catch (err) {
+        res.status(400).json({ message: 'error getting user' });
     }
 }
 module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, deleteUser, getAllUser };

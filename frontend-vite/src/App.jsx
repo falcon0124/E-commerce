@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Cart from './pages/Cart';
-import Orders from './pages/Orders';
+import Profile from './pages/Profile';
 import Products from './pages/Products';
 import Admin from './pages/Admin';
 import ProductDetails from './pages/ProductDetails';
@@ -19,7 +19,7 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="cart" element={<Cart />} />
-        <Route path="orders" element={<Orders />} />
+        <Route path="Profile" element={<Profile />} />
         <Route path="products" element={<Products />} />
         <Route path="placeOrder" element={<PlaceOrder />} />
         <Route path="/product/:id" element={<ProductDetails />} />
