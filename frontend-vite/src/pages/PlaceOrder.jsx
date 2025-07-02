@@ -1,18 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { redirect, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext";
+
 
 const PlaceOrder = () => {
   const minutes = 30;
   const location = useLocation();
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(minutes * 60);
+  const { backendUrl, token } = useAuth();
 
- const cartItems = useMemo(() => location.state?.cartItems || [], [location.state]);
+
+  const cartItems = useMemo(() => location.state?.cartItems || [], [location.state]);
   const totalPrice = useMemo(() => location.state?.totalPrice || 0, [location.state]);
 
-   useEffect(() => {
-  console.log("🛒 Cart items updated:", cartItems);
-}, [cartItems]);
+  useEffect(() => {
+    console.log("🛒 Cart items updated:", cartItems);
+  }, [cartItems]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -44,8 +48,41 @@ const PlaceOrder = () => {
     return `${mm}:${ss}`;
   };
 
-    const placingOrder = async (e) => {
+  const placingOrder = async (e) => {
+    e.preventDefault();
+
+    try {
+      const paymentMethod = e.target.paymentMethod.value;
+      const shippingAddress = e.target.shippingAddress.value;
+      const res = await fetch(`${backendUrl}/api/order`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          paymentMethod,
+          shippingAddress,
+        })
+      });
+
+      
+      if (!res.ok) {
+        const errMsg = await res.text();
+        throw new Error(`HTTP ${res.status} - ${errMsg}`);
+      }
+      
+      const data = await res.json();
+      alert("order placed");
+      navigate('/');
+      console.log("✅ Order placed successfully:", data);
+    } catch (err) {
+      console.error("❌ Order placement failed:", err);
+      alert("Failed to place order. Please try again.");
+      navigate('/cart');
     }
+  }
 
   return (
     <div className='max-w-4xl space mx-auto bg-white p-6 shadow-lg rounded-lg'>
