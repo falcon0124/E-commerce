@@ -12,24 +12,24 @@ export default function Profile() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
- useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const res = await fetch(`${backendUrl}/api/user/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      const data = await res.json();
-      console.log("🔍 Profile fetch response:", data);
+        const data = await res.json();
+        console.log("🔍 Profile fetch response:", data);
 
-      setUser({ fullName: data.fullName, email: data.email });
-      setForm({ fullName: data.fullName, password: '' });
-    } catch (err) {
-      console.error("Error fetching profile:", err);
-    }
-  };
+        setUser({ fullName: data.fullName, email: data.email });
+        setForm({ fullName: data.fullName, password: '' });
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
+    };
 
 
 
@@ -52,37 +52,81 @@ export default function Profile() {
   }, [backendUrl, token]);
 
   const handleUpdate = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await fetch(`${backendUrl}/api/user/profile`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(form)
-    });
+    e.preventDefault();
+    try {
+      const res = await fetch(`${backendUrl}/api/user/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(form)
+      });
 
-    const data = await res.json();
-    console.log("🔄 Update response:", data);
+      const data = await res.json();
+      console.log("🔄 Update response:", data);
 
-    if (!data.updatedUser) {
-      throw new Error("User data missing in response");
+      if (!data.updatedUser) {
+        throw new Error("User data missing in response");
+      }
+
+      alert('Profile updated successfully!');
+      setUser({
+        fullName: data.updatedUser.fullName,
+        email: data.updatedUser.email
+      });
+      setForm({ fullName: data.updatedUser.fullName, password: '' });
+      setEditing(false);
+    } catch (err) {
+      console.error('Update failed:', err);
+      alert("Failed to update profile.");
     }
+  };
 
-    alert('Profile updated successfully!');
-    setUser({
-      fullName: data.updatedUser.fullName,
-      email: data.updatedUser.email
-    });
-    setForm({ fullName: data.updatedUser.fullName, password: '' });
-    setEditing(false);
-  } catch (err) {
-    console.error('Update failed:', err);
-    alert("Failed to update profile.");
-  }
-};
+  const handleDeleteProfile = async () => {
+    if (!window.confirm("⚠️ This will permanently delete your profile. Continue?")) return;
 
+    try {
+      const res = await fetch(`${backendUrl}/api/user/profile`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      alert("Your profile has been deleted.");
+
+      // Optional: log out and redirect
+      localStorage.removeItem('token');
+      navigate("/login");
+    } catch (err) {
+      console.error('Failed to delete profile:', err);
+      alert('Failed to delete profile');
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to delete this order?")) return;
+
+    try {
+      const res = await fetch(`${backendUrl}/api/order/${orderId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      alert("Order deleted successfully!");
+
+      // Refresh the orders list
+      setOrders(prev => prev.filter(order => order._id !== orderId));
+    } catch (err) {
+      console.error('Failed to delete order:', err);
+      alert('Failed to delete order');
+    }
+  };
 
 
   if (!user) return <div className="text-center py-10">Loading profile...</div>;
@@ -136,6 +180,7 @@ export default function Profile() {
               <th className="p-2">Total</th>
               <th className="p-2">Status</th>
               <th className="p-2">Date</th>
+              <th className="p-2">Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -146,11 +191,26 @@ export default function Profile() {
                 <td className="p-2">₹{order.totalAmount}</td>
                 <td className="p-2">{order.currentStatus}</td>
                 <td className="p-2">{new Date(order.createdAt).toLocaleString()}</td>
+                <td className="p-2">
+                  <button
+                    onClick={() => handleDeleteOrder(order._id)}
+                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </td>
+
               </tr>
             ))}
           </tbody>
         </table>
       )}
+      <button
+        onClick={handleDeleteProfile}
+        className="mt-6 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+      >
+        Delete Profile
+      </button>
     </div>
   );
 }

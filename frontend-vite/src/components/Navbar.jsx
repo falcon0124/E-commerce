@@ -11,7 +11,6 @@ import { Link, useNavigate } from 'react-router-dom';
 const navigation = [
   { name: 'Home', href: '/', current: true },
   { name: 'Cart', href: '/cart', current: false },
-  { name: 'Products', href: '/products', current: false },
   { name: 'Orders', href: '/orders', current: false },
 ];
 
