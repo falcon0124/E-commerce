@@ -97,7 +97,6 @@ export default function Profile() {
       const data = await res.json();
       alert("Your profile has been deleted.");
 
-      // Optional: log out and redirect
       localStorage.removeItem('token');
       navigate("/login");
     } catch (err) {
