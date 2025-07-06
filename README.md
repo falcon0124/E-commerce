@@ -34,10 +34,8 @@ A full-stack E-Commerce web application built with the MERN stack (MongoDB, Expr
 | Frontend | Backend | Database | Others |
 |----------|---------|----------|--------|
 | React + Vite | Node.js | MongoDB | JWT Auth |
-| Tailwind CSS | Express.js | Mongoose | Cloudinary (optional) |
+| Tailwind CSS | Express.js | Mongoose |  |
 | React Router | REST API |  | dotenv |
 
 ---
-
-## 📂 Project Structure
 
