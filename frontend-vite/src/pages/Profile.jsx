@@ -9,6 +9,8 @@ export default function Profile() {
   const [products, setProducts] = useState([]);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ fullName: '', password: '' });
+  const [allUsers, setAllUsers] = useState([]);
+  const [adminOrders, setAdminOrders] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,20 +23,34 @@ export default function Profile() {
         });
         const data = await res.json();
         setUser(data);
+        console.log("Fetched user profile:", data);
       } catch (err) {
         console.error("Error fetching profile:", err);
       }
     };
 
+    fetchProfile();
+  }, [backendUrl, token]);
+
+  // Fetch data for both roles
+  useEffect(() => {
+    if (!user) return;
+
     const fetchOrders = async () => {
+      const url =
+        user.role === 'ADMIN'
+          ? `${backendUrl}/api/admin/orders`
+          : `${backendUrl}/api/order/view-orders`;
+
       try {
-        const res = await fetch(`${backendUrl}/api/order/view-orders`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const res = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        setOrders(Array.isArray(data.orders) ? data.orders : []);
+        if (user.role === 'ADMIN') setAdminOrders(data.allOrders || []);
+
+
+        else setOrders(data.orders || []);
       } catch (err) {
         console.error('Error fetching orders:', err);
       }
@@ -43,9 +59,7 @@ export default function Profile() {
     const fetchProducts = async () => {
       try {
         const res = await fetch(`${backendUrl}/api/product/my-products`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
         setProducts(Array.isArray(data.products) ? data.products : []);
@@ -54,10 +68,27 @@ export default function Profile() {
       }
     };
 
-    fetchProfile();
+    const fetchAllUsers = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/admin/users`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setAllUsers(data.users || []);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+      }
+    };
+
     fetchOrders();
     fetchProducts();
-  }, [backendUrl, token]);
+    if (user.role === 'ADMIN') fetchAllUsers();
+  }, [backendUrl, token, user]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -79,73 +110,147 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteOrder = async (orderId) => {
-    if (!window.confirm("Are you sure you want to delete this order?")) return;
-
-    try {
-      await fetch(`${backendUrl}/api/order/delete/${orderId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      alert("Order deleted successfully!");
-      setOrders(prev => prev.filter(order => order._id !== orderId));
-    } catch (err) {
-      console.error('Failed to delete order:', err);
-      alert('Failed to delete order');
-    }
-  };
-
   const handleDeleteProfile = async () => {
     if (!window.confirm("⚠️ This will permanently delete your profile. Continue?")) return;
-
     try {
       await fetch(`${backendUrl}/api/user/profile`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       alert("Your profile has been deleted.");
       localStorage.removeItem('token');
       navigate("/login");
     } catch (err) {
       console.error('Failed to delete profile:', err);
-      alert('Failed to delete profile');
     }
   };
 
-  const handleDeleteProduct = async (productId) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-
+  const handleUpdateStatus = async (orderId, status) => {
     try {
-      await fetch(`${backendUrl}/api/product/delete/${productId}`, {
-        method: 'DELETE',
+      const res = await fetch(`${backendUrl}/api/admin/${orderId}/status`, {
+        method: 'PATCH',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ status }),
       });
-      alert("Product deleted successfully!");
-      setProducts(prev => prev.filter(product => product._id !== productId));
+      const data = await res.json();
+      setAdminOrders(prev =>
+        prev.map(order =>
+          order._id === orderId ? { ...order, status: data.updatedOrder.status } : order
+        )
+      );
     } catch (err) {
-      console.error('Failed to delete product:', err);
-      alert('Failed to delete product');
+      console.error('Failed to update status:', err);
     }
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
-
 
   if (!user) return <div className="text-center py-10">Loading profile...</div>;
 
-  return (
-    <div className="max-w-6xl mx-auto space-y-10 space p-6 bg-white rounded-lg shadow-lg mb-5">
-      <h1 className="text-3xl font-bold text-center">👤 Your Profile</h1>
+  if (user.role === 'ADMIN') {
+    return (
+      <div className="max-w-6xl space mx-auto p-6 bg-white rounded-lg shadow-lg space-y-10 mb-5">
+        <h1 className="text-3xl font-bold text-center">👑 Admin Dashboard</h1>
+        <p className="text-lg text-center">Welcome, {user.fullName}</p>
 
+        <button
+          onClick={handleLogout}
+          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+        >
+          Logout
+        </button>
+
+        <section>
+          <h2 className="text-2xl font-bold mb-4">📋 All Users</h2>
+          {allUsers.length === 0 ? (
+            <p className="text-gray-600">No users found.</p>
+          ) : (
+            <div className="overflow-x-auto rounded-lg shadow-md">
+              <table className="min-w-full text-sm text-left text-gray-700 border border-gray-200">
+                <thead className="bg-gray-100 text-gray-900 uppercase text-xs tracking-wider">
+                  <tr>
+                    <th className="px-6 py-3 border-b">Name</th>
+                    <th className="px-6 py-3 border-b">Email</th>
+                    <th className="px-6 py-3 border-b">Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allUsers.map((u) => (
+                    <tr key={u._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 border-b">{u.fullName}</td>
+                      <td className="px-6 py-4 border-b">{u.email}</td>
+                      <td className="px-6 py-4 border-b">
+                        <span
+                          className={`inline-block px-2 py-1 text-xs rounded font-semibold ${u.role === 'ADMIN'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-blue-100 text-blue-800'
+                            }`}
+                        >
+                          {u.role}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+
+        <section>
+          <h2 className="text-2xl font-bold mb-3">📦 All Orders</h2>
+          {adminOrders.length === 0 ? (
+            <p>No orders yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2">Order ID</th>
+                    <th className="p-2">User</th>
+                    <th className="p-2">Items</th>
+                    <th className="p-2">Total</th>
+                    <th className="p-2">Status</th>
+                    <th className="p-2">Update</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {adminOrders.map((order) => (
+                    <tr key={order._id} className="border-t">
+                      <td className="p-2">{order._id}</td>
+                      <td className="p-2">{order.user?.fullName || 'Unknown'}</td>
+                      <td className="p-2">{order.items.map(i => i.product?.pdtName || 'Deleted').join(', ')}</td>
+                      <td className="p-2">₹{order.totalAmount}</td>
+                      <td className="p-2">{order.currentStatus}</td>
+                      <td className="p-2">
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                          className="border px-2 py-1 rounded"
+                        >
+                          <option value="Placed">Placed</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-6xl space mx-auto p-6 bg-white rounded-lg shadow-lg space-y-10 mb-5">
+      <h1 className="text-3xl font-bold text-center">👤 Your Profile</h1>
+      <p className="text-center text-lg">Welcome, {user.fullName}</p>
       {editing ? (
         <form onSubmit={handleUpdate} className="space-y-4">
           <div>
@@ -212,7 +317,7 @@ export default function Profile() {
                     <td className="p-2 whitespace-nowrap">{order._id}</td>
                     <td className="p-2">{order.items.map(i => i.product?.pdtName || 'Deleted').join(', ')}</td>
                     <td className="p-2">₹{order.totalAmount}</td>
-                    <td className="p-2">{order.status}</td>
+                    <td className="p-2">{order.currentStatus}</td>
                     <td className="p-2 whitespace-nowrap">{new Date(order.createdAt).toLocaleString()}</td>
                     <td className="p-2">
                       <button
@@ -243,6 +348,7 @@ export default function Profile() {
                   alt={product.pdtName}
                   className="w-full h-40 object-cover mb-2 rounded"
                 />
+
                 <h3 className="text-lg font-semibold">{product.pdtName}</h3>
                 <p className="text-gray-600 text-sm">₹{product.price}</p>
                 <p className="text-gray-500 text-xs mt-1">{product.category}</p>
@@ -265,6 +371,9 @@ export default function Profile() {
           </Link>
         </div>
       </div>
+      {/* ...continue your normal user profile UI here... */}
+      {/* Add your existing product, order, and edit/delete logic here */}
+      {/* Don't forget the logout button too */}
     </div>
   );
 }

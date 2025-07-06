@@ -112,23 +112,27 @@ async function viewOrdersAdmin(req, res) {
 }
 
 async function updateStatus(req, res) {
-    const { orderId } = req.params;
-    const { newStatus } = req.body;
+  const { orderId } = req.params;
+  const { status } = req.body;
 
-    try {
-        const userOrder = await Order.findById(orderId);
+  try {
+    const userOrder = await Order.findById(orderId);
 
-        if (!userOrder) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-
-
-        userOrder.currentStatus = newStatus;
-        await userOrder.save();
-
-        return res.status(200).json({ message: `Order status updated to ${newStatus}` });
-    } catch (err) {
-        return res.status(400).json({ message: 'something went wrong' });
+    if (!userOrder) {
+      return res.status(404).json({ message: 'Order not found' });
     }
+
+    userOrder.currentStatus = status;
+    await userOrder.save();
+
+    // ✅ send back the updated order with consistent naming
+    return res.status(200).json({
+      message: `Order status updated to ${status}`,
+      updatedOrder: userOrder,
+    });
+  } catch (err) {
+    return res.status(400).json({ message: 'Something went wrong', error: err.message });
+  }
 }
+
 module.exports = { placeOrder, viewUserOrder, viewOrdersAdmin, deleteOder, updateStatus };

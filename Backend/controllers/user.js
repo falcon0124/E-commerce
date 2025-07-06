@@ -60,6 +60,7 @@ async function getUserProfile(req, res) {
         return res.status(200).json({
             fullName: userData.fullName,
             email: userData.email,
+            role: userData.role,
         });
     } catch (err) {
         return res.status(500).json({ message: "Something went wrong" });
