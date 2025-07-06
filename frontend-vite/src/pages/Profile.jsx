@@ -183,8 +183,8 @@ export default function Profile() {
                       <td className="px-6 py-4 border-b">
                         <span
                           className={`inline-block px-2 py-1 text-xs rounded font-semibold ${u.role === 'ADMIN'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-blue-100 text-blue-800'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-blue-100 text-blue-800'
                             }`}
                         >
                           {u.role}
@@ -200,35 +200,45 @@ export default function Profile() {
 
 
         <section>
-          <h2 className="text-2xl font-bold mb-3">📦 All Orders</h2>
+          <h2 className="text-2xl font-bold mb-4">📦 All Orders</h2>
           {adminOrders.length === 0 ? (
-            <p>No orders yet.</p>
+            <p className="text-gray-600">No orders yet.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border text-sm">
-                <thead className="bg-gray-100">
+            <div className="overflow-x-auto rounded-lg shadow-md">
+              <table className="min-w-full text-sm text-left text-gray-700 border border-gray-200">
+                <thead className="bg-gray-100 text-gray-900 uppercase text-xs tracking-wider">
                   <tr>
-                    <th className="p-2">Order ID</th>
-                    <th className="p-2">User</th>
-                    <th className="p-2">Items</th>
-                    <th className="p-2">Total</th>
-                    <th className="p-2">Status</th>
-                    <th className="p-2">Update</th>
+                    <th className="px-6 py-3 border-b">Order ID</th>
+                    <th className="px-6 py-3 border-b">User</th>
+                    <th className="px-6 py-3 border-b">Items</th>
+                    <th className="px-6 py-3 border-b">Total</th>
+                    <th className="px-6 py-3 border-b">Status</th>
+                    <th className="px-6 py-3 border-b">Update</th>
                   </tr>
                 </thead>
                 <tbody>
                   {adminOrders.map((order) => (
-                    <tr key={order._id} className="border-t">
-                      <td className="p-2">{order._id}</td>
-                      <td className="p-2">{order.user?.fullName || 'Unknown'}</td>
-                      <td className="p-2">{order.items.map(i => i.product?.pdtName || 'Deleted').join(', ')}</td>
-                      <td className="p-2">₹{order.totalAmount}</td>
-                      <td className="p-2">{order.currentStatus}</td>
-                      <td className="p-2">
+                    <tr key={order._id} className="hover:bg-gray-50 border-t">
+                      <td className="px-6 py-4 border-b">{order._id}</td>
+                      <td className="px-6 py-4 border-b">{order.user?.fullName || 'Unknown'}</td>
+                      <td className="px-6 py-4 border-b">
+                        {order.items.map(i => i.product?.pdtName || 'Deleted').join(', ')}
+                      </td>
+                      <td className="px-6 py-4 border-b">₹{order.totalAmount}</td>
+                      <td className="px-6 py-4 border-b">
+                        <span className={`inline-block px-2 py-1 text-xs rounded font-semibold
+                  ${order.currentStatus === 'Placed' ? 'bg-yellow-100 text-yellow-800' :
+                            order.currentStatus === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                              order.currentStatus === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                'bg-red-100 text-red-800'}`}>
+                          {order.currentStatus}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 border-b">
                         <select
-                          value={order.status}
+                          value={order.currentStatus}
                           onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
-                          className="border px-2 py-1 rounded"
+                          className="border border-gray-300 px-2 py-1 rounded"
                         >
                           <option value="Placed">Placed</option>
                           <option value="Shipped">Shipped</option>
@@ -243,6 +253,7 @@ export default function Profile() {
             </div>
           )}
         </section>
+
       </div>
     );
   }
