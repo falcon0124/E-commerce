@@ -12,28 +12,30 @@ export default function RegistrationForm() {
   const navigate = useNavigate();
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      const res = await axiosInstance.post('/auth/register', {
-        fullName,
-        email,
-        password,
-      });
-      console.log('✅ Registration successful:', res.data);
+  try {
+    const res = await axiosInstance.post('/auth/register', {
+      fullName,
+      email,
+      password,
+    });
 
-      const { token } = res.data
-      localStorage.setItem('token', token);
+    console.log('✅ Registration successful:', res.data);
 
-      setIsLoggedIn(true);
-      navigate('/');
-      
-    } catch (err) {
-      console.error('❌ Registration failed:', err.response?.data || err.message);
-      alert(err.response?.data);
-    }
-  };
+    const { token } = res.data;
+    localStorage.setItem('token', token);
+
+    setIsLoggedIn(true);
+    navigate('/');
+    
+  } catch (err) {
+    console.error('❌ Registration failed:', err.response?.data || err.message);
+    alert(err.response?.data?.message || 'Something went wrong');
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
