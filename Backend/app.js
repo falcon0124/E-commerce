@@ -14,11 +14,14 @@ app.use(express.static(path.resolve('./public')));
 app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 
 const cors = require('cors');
-
 app.use(cors({
-  origin: process.env.CORS_ORIGIN, 
-  credentials: true
+  origin: [
+    'http://localhost:5173',                            
+    'https://charming-naiad-d6516a.netlify.app',         
+  ],
+  credentials: true,
 }));
+
 
 
 const authroute = require('./routes/auth');
