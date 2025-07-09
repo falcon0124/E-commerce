@@ -16,7 +16,7 @@ export default function RegistrationForm() {
   e.preventDefault();
 
   try {
-    const res = await axiosInstance.post('/auth/register', {
+    const res = await axiosInstance.post('/api/auth/register', {
       fullName,
       email,
       password,
