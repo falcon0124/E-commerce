@@ -6,7 +6,6 @@ import Register from './pages/Register';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import Products from './pages/Products';
-import Admin from './pages/Admin';
 import ProductDetails from './pages/ProductDetails';
 import PlaceOrder from './pages/PlaceOrder';
 import AddItem from './pages/AddItem';
@@ -24,7 +23,6 @@ function App() {
         <Route path="AddItem" element={<AddItem />} />
         <Route path="placeOrder" element={<PlaceOrder />} />
         <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="admin" element={<Admin />} />
       </Route>
 
     </Routes>
