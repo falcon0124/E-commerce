@@ -31,7 +31,7 @@ export default function RegistrationForm() {
     navigate('/');
     
   } catch (err) {
-    console.error('❌ Registration failed:', err.response?.data || err.message);
+    console.error('❌ Registration failed:',err.response?.data || err.message);
     alert(err.response?.data?.message || 'Something went wrong');
   }
 };

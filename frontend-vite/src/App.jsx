@@ -17,7 +17,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="Cart" element={<Cart />} />
+        <Route path="cart" element={<Cart />} />
         <Route path="Profile" element={<Profile />} />
         <Route path="AddItem" element={<AddItem />} />
         <Route path="placeOrder" element={<PlaceOrder />} />
