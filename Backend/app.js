@@ -5,24 +5,30 @@ const path = require('path');
 
 dotenv.config();
 
-const app = express(); 
+const app = express();
 const port = process.env.PORT;
 
-app.use(express.urlencoded({ extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static(path.resolve('./public')));
 app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
-
 const cors = require('cors');
+
+const allowedOrigins = [
+  'https://charming-naiad-d6516a.netlify.app',
+  'http://localhost:5173' 
+];
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173',                            
-    'https://charming-naiad-d6516a.netlify.app',         
-  ],
-  credentials: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
-
-
 
 const authroute = require('./routes/auth');
 const userRoute = require('./routes/user');
