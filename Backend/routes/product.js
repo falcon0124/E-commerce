@@ -2,7 +2,7 @@ const express = require('express');
 const verifyToken = require('../middlewares/protectRoute')
 const { storage } = require('../utils/cloudinary');
 const multer = require('multer');
-const {createProduct, upload, userProduct, getAllProducts, getSingleProduct, deleteProduct, searchProduct, getProductByCategory} = require('../controllers/product');
+const {createProduct, userProduct, getAllProducts, getSingleProduct, deleteProduct, searchProduct, getProductByCategory} = require('../controllers/product');
 
 const upload = multer({ storage });
 const router = express.Router();
