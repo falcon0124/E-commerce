@@ -57,7 +57,7 @@ export default function ProductDetails() {
   if (!product) return <div className="text-center mt-10">Loading...</div>;
 
   return (
-    <div className="max-w-3xl space mx-auto bg-white shadow-lg rounded-lg p-6 mb-10">
+    <div className="max-w-3xl space mx-auto bg-white shadow-lg rounded-lg p-6 mb-20">
       <div className='flex items-center justify-between mb-4'>
         <h2 className="text-2xl font-bold mb-4 text-center">{product.pdtName}</h2>
         <button className="text-blue-600 hover:text-blue-800 transition" onClick={() => handleAddToCart(product._id)}>
