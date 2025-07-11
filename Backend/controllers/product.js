@@ -2,42 +2,33 @@ const express = require('express');
 const User = require('../models/user');
 const Product = require('../models/product');
 const multer = require('multer');
-const path = require('path');
+const multer = require('multer');
+const { storage } = require('../utils/cloudinary'); 
+const upload = multer({ storage }); 
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.resolve('./public/uploads'));
-    },
-    filename: function (req, file, cb) {
-        const filename = `${Date.now()}-${file.originalname}`;
-        cb(null, filename);
+const createProduct = async (req, res) => {
+  try {
+    const { pdtName, pdtDescription, price, category } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required" });
     }
-});
 
-const upload = multer({ storage: storage });
+    const product = await Product.create({
+      pdtName,
+      pdtDescription,
+      price: Number(price),
+      category,
+      imageUrl: req.file.path, 
+      createdBy: req.user._id
+    });
 
-async function createProduct(req, res) {
-    try {
-        const { pdtName, pdtDescription, price, category } = req.body;
+    res.status(200).json({ message: 'Product registered', product });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to register product', error: err.message });
+  }
+};
 
-        if (!req.file) {
-            return res.status(400).json({ message: "Image file is required" });
-        }
-
-        const product = await Product.create({
-            pdtName,
-            pdtDescription,
-            price: Number(price),
-            category,
-            imageUrl: `uploads/${req.file.filename}`,
-            createdBy: req.user._id
-        });
-
-        res.status(200).json({ message: 'Product registered', product });
-    } catch (err) {
-        res.status(500).json({ message: 'Failed to register product', error: err.message });
-    }
-}
 
 async function userProduct(req, res) {
     const userId = req.user._id;
