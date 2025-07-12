@@ -13,6 +13,12 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ message: "Image file is required" });
     }
 
+    if (!pdtName || !pdtDescription || !price || !category) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    console.log("📦 File uploaded to Cloudinary:", req.file.path);
+
     const product = await Product.create({
       pdtName,
       pdtDescription,
@@ -24,9 +30,12 @@ const createProduct = async (req, res) => {
 
     res.status(200).json({ message: 'Product registered', product });
   } catch (err) {
+    console.error("❌ Failed to create product:", err);
     res.status(500).json({ message: 'Failed to register product', error: err.message });
   }
 };
+
+module.exports = { createProduct };
 
 
 async function userProduct(req, res) {

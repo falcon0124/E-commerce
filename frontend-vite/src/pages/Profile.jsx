@@ -32,7 +32,6 @@ export default function Profile() {
     fetchProfile();
   }, [backendUrl, token]);
 
-  // Fetch data for both roles
   useEffect(() => {
     if (!user) return;
 
@@ -382,9 +381,6 @@ export default function Profile() {
           </Link>
         </div>
       </div>
-      {/* ...continue your normal user profile UI here... */}
-      {/* Add your existing product, order, and edit/delete logic here */}
-      {/* Don't forget the logout button too */}
     </div>
   );
 }
