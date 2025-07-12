@@ -82,7 +82,7 @@ export default function Cart() {
         <div className="space-y-6">
           {cartItems.map(({ product, quantity }) => (
             <div key={product._id} className="flex items-center justify-between border-b pb-4">
-              <img src={`${backendUrl}/${product.imageUrl}`} alt={product.pdtName} className="w-24 h-24 object-contain rounded" />
+              <img src={`${product.imageUrl}`} alt={product.pdtName} className="w-24 h-24 object-contain rounded" />
               <div className="flex-1 px-4">
                 <h3 className="text-lg font-semibold">{product.pdtName}</h3>
                 <p className="text-gray-600">₹{product.price} × {quantity}</p>
