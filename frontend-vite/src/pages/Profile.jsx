@@ -163,6 +163,30 @@ export default function Profile() {
   }
 };
 
+const handleDeleteOrder = async (orderId) => {
+  try {
+    const res = await fetch(`${backendUrl}/api/order/${orderId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'Failed to delete order');
+    }
+
+    alert('🗑️ Order deleted successfully');
+    
+    setOrders((prev) => prev.filter((order) => order._id !== orderId));
+
+  } catch (err) {
+    console.error('❌ Error deleting order:', err.message);
+    alert(`Failed to delete order: ${err.message}`);
+  }
+};
+
 
   if (!user) return <div className="text-center py-10">Loading profile...</div>;
 
@@ -373,7 +397,7 @@ export default function Profile() {
             {products.map((product) => (
               <div key={product._id} className="border p-4 rounded shadow relative">
                 <img
-                  src={`${backendUrl}/${product.imageUrl}`}
+                  src={`${product.imageUrl}`}
                   alt={product.pdtName}
                   className="w-full h-40 object-cover mb-2 rounded"
                 />

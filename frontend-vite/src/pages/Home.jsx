@@ -145,7 +145,7 @@ export default function Home() {
             className="w-full max-w-xs bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition duration-300 m-4 border-2 border-amber-200"
           >
             <img
-              src={`${backendUrl}/${item.imageUrl}`}
+              src={`${item.imageUrl}`}
               alt={item.name}
               className="w-full h-60 object-cover"
             />
