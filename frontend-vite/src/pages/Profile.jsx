@@ -145,6 +145,25 @@ export default function Profile() {
     }
   };
 
+  const handleDeleteProduct = async (productId) => {
+  try {
+    const res = await fetch(`${backendUrl}/api/product/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error('Delete failed');
+    alert('Deleted!');
+    setProducts(prev => prev.filter(p => p._id !== productId));
+  } catch (err) {
+    console.error('❌ Failed to delete product:', err);
+    alert('Delete failed');
+  }
+};
+
+
   if (!user) return <div className="text-center py-10">Loading profile...</div>;
 
   if (user.role === 'ADMIN') {
