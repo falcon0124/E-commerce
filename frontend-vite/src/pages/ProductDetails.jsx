@@ -68,7 +68,7 @@ export default function ProductDetails() {
       </div>
 
       <img
-        src={`${item.imageUrl}`}
+        src={`${product.imageUrl}`}
         alt={product.pdtName}
         className="w-full h-96 object-contain rounded-lg mb-6"
       />
