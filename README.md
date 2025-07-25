@@ -8,7 +8,7 @@ A full-stack E-Commerce web application built with the MERN stack (MongoDB, Expr
 
 ![Ecommerce Preview](https://user-images.githubusercontent.com/your-demo-link.gif)
 
-> 🌐 **Live Site:** [https://your-ecommerce-site.com](https://your-ecommerce-site.com)
+> 🌐 **Live Site:** [https://your-ecommerce-site.com](https://charming-naiad-d6516a.netlify.app/)
 
 ---
 
